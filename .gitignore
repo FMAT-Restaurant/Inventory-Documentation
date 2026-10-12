@@ -1,0 +1,9 @@
+.pnpm-store/
+node_modules
+
+# Generated Docusaurus cache and site output
+/.docusaurus/
+/build/
+
+# Generated OpenAPI bundle (built from apis/inventory/openapi.yaml)
+/static/api/

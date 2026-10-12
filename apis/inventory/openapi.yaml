@@ -1,0 +1,653 @@
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: AppController_getHello
+      parameters: []
+      responses:
+        "200":
+          description: La aplicación está disponible
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Hello World!
+      tags:
+        - app
+  /ingredients:
+    post:
+      operationId: IngredientsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIngredientDto"
+      responses:
+        "201":
+          description: Ingrediente creado con éxito
+        "400":
+          description: Datos de entrada inválidos
+        "409":
+          description: Ya existe un ingrediente con ese nombre
+      summary: Crear un nuevo ingrediente
+      tags: &a1
+        - ingredients
+    get:
+      operationId: IngredientsController_findAll
+      parameters: []
+      responses:
+        "200":
+          description: Lista de ingredientes obtenida con éxito
+      summary: Obtener la lista completa de ingredientes
+      tags: *a1
+  /ingredients/{id}:
+    get:
+      operationId: IngredientsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del ingrediente (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ingrediente obtenido con éxito
+        "404":
+          description: Ingrediente no encontrado
+      summary: Obtener un ingrediente por su ID
+      tags: *a1
+    delete:
+      operationId: IngredientsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del ingrediente (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ingrediente eliminado con éxito
+        "404":
+          description: Ingrediente no encontrado
+      summary: Eliminar un ingrediente
+      tags: *a1
+  /batches:
+    post:
+      operationId: BatchController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBatchDto"
+      responses:
+        "201":
+          description: Lote creado con éxito
+        "400":
+          description: Datos de entrada inválidos
+        "404":
+          description: Ingrediente referenciado no encontrado
+        "409":
+          description: Ya existe un lote con ese número
+      summary: Crear un nuevo lote
+      tags: &a2
+        - batches
+    get:
+      operationId: BatchController_findAll
+      parameters: []
+      responses:
+        "200":
+          description: Lista de lotes obtenida con éxito
+      summary: Obtener la lista completa de lotes
+      tags: *a2
+  /batches/{id}:
+    get:
+      operationId: BatchController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del lote (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lote obtenido con éxito
+        "404":
+          description: Lote no encontrado
+      summary: Obtener un lote por su ID
+      tags: *a2
+    patch:
+      operationId: BatchController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del lote
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBatchDto"
+      responses:
+        "200":
+          description: Lote actualizado con éxito
+        "404":
+          description: Lote no encontrado
+      summary: Actualizar un lote
+      tags: *a2
+    delete:
+      operationId: BatchController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del lote
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lote eliminado con éxito
+        "404":
+          description: Lote no encontrado
+      summary: Eliminar un lote
+      tags: *a2
+  /suppliers:
+    post:
+      operationId: SuppliersController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSupplierDto"
+      responses:
+        "201":
+          description: Proveedor creado con éxito
+        "400":
+          description: Datos de entrada inválidos
+        "409":
+          description: Ya existe un proveedor con ese nombre
+      summary: Crear un nuevo proveedor
+      tags: &a3
+        - suppliers
+    get:
+      operationId: SuppliersController_findAll
+      parameters: []
+      responses:
+        "200":
+          description: Lista de proveedores obtenida con éxito
+      summary: Obtener la lista completa de proveedores
+      tags: *a3
+  /suppliers/{id}:
+    get:
+      operationId: SuppliersController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del proveedor (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Proveedor obtenido con éxito
+        "404":
+          description: Proveedor no encontrado
+      summary: Obtener un proveedor por su ID
+      tags: *a3
+    patch:
+      operationId: SuppliersController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del proveedor
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSupplierDto"
+      responses:
+        "200":
+          description: Proveedor actualizado con éxito
+        "404":
+          description: Proveedor no encontrado
+      summary: Actualizar un proveedor
+      tags: *a3
+    delete:
+      operationId: SuppliersController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del proveedor
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Proveedor eliminado con éxito
+        "404":
+          description: Proveedor no encontrado
+      summary: Eliminar un proveedor
+      tags: *a3
+  /recipes:
+    post:
+      operationId: RecipeController_createOrUpdate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRecipeDto"
+      responses:
+        "200":
+          description: Receta existente actualizada exitosamente de forma idempotente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponseDto"
+        "201":
+          description: Receta registrada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponseDto"
+        "400":
+          description: Datos de entrada inválidos o incompletos
+        "404":
+          description: Uno o más ingredientes referenciados no existen en el catálogo
+        "409":
+          description: Conflicto al persistir la receta
+      summary: Registrar o actualizar una receta (idempotente por plateId)
+      tags: &a4
+        - recipes
+    get:
+      operationId: RecipeController_findAll
+      parameters:
+        - name: available
+          required: false
+          in: query
+          description: Filtrar por recetas disponibles (true) o no disponibles (false)
+          schema:
+            example: true
+            type: boolean
+      responses:
+        "200":
+          description: Lista de recetas obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecipeResponseDto"
+      summary: Obtener el listado de recetas con cálculo de disponibilidad y costo en
+        tiempo real
+      tags: *a4
+  /recipes/{id}:
+    get:
+      operationId: RecipeController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único de MongoDB (ObjectId) o plateId del platillo
+          schema:
+            example: PLATE-BURGER-01
+            type: string
+      responses:
+        "200":
+          description: Detalle de la receta y disponibilidad obtenido con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponseDto"
+        "404":
+          description: Receta no encontrada
+      summary: Obtener una receta con su detalle de disponibilidad por su ID
+        (ObjectId) o plateId
+      tags: *a4
+    patch:
+      operationId: RecipeController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único de MongoDB (ObjectId) o plateId del platillo
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRecipeDto"
+      responses:
+        "200":
+          description: Receta actualizada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeResponseDto"
+        "404":
+          description: Receta o ingredientes no encontrados
+      summary: Actualizar parcialmente una receta
+      tags: *a4
+    delete:
+      operationId: RecipeController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único de MongoDB (ObjectId) o plateId del platillo
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Receta eliminada con éxito
+        "404":
+          description: Receta no encontrada
+      summary: Eliminar una receta
+      tags: *a4
+  /apo/test/reset:
+    delete:
+      operationId: TestController_reset
+      parameters: []
+      responses:
+        "200":
+          description: Base de datos borrada con éxito
+        "403":
+          description: No permitido en el entorno actual (solo dev/qa)
+      summary: Restablecer (borrar) toda la base de datos
+      tags:
+        - test
+info:
+  title: Inventory Backend
+  description: API del inventario
+  version: 0.0.1
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    CreateIngredientDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del ingrediente
+          example: Tomate
+        unit:
+          type: string
+          description: Unidad de medida
+          example: kg
+        minStock:
+          type: number
+          description: Cantidad en minima para el stock
+          example: 10
+        category:
+          type: string
+          description: Categoría del ingrediente
+          example: Verduras
+        supplierIdSugested:
+          type: string
+          description: ID del proveedor sugerido
+          example: 507f1f77bcf86cd799439011
+      required:
+        - name
+        - unit
+        - minStock
+        - category
+    CreateBatchDto:
+      type: object
+      properties:
+        batchNumber:
+          type: string
+          description: Número de lote único
+          example: LOTE-2023-001
+        ingredientId:
+          type: string
+          description: ID del ingrediente (ObjectId)
+          example: 60d5ec...
+        quantity:
+          type: number
+          description: Cantidad del lote
+          example: 100
+        expirationDate:
+          type: string
+          description: Fecha de expiración
+          example: 2024-12-31T23:59:59Z
+        supplierId:
+          type: string
+          description: ID del proveedor (ObjectId)
+          example: 60d5ec...
+        cost:
+          type: number
+          description: Costo total o unitario del lote
+          example: 150.5
+        status:
+          type: string
+          description: Estado del lote
+          enum:
+            - active
+            - expires_today
+            - expired
+            - depleted
+          default: active
+      required:
+        - batchNumber
+        - ingredientId
+        - quantity
+        - expirationDate
+        - cost
+    UpdateBatchDto:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: Cantidad del lote
+          example: 100
+        expirationDate:
+          type: string
+          description: Fecha de expiración
+          example: 2024-12-31T23:59:59Z
+        cost:
+          type: number
+          description: Costo total o unitario del lote
+          example: 150.5
+    CreateSupplierDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del proveedor
+          example: Distribuidora Central
+        contactName:
+          type: string
+          description: Nombre del contacto
+          example: Juan Pérez
+        phone:
+          type: string
+          description: Teléfono de contacto
+          example: +52 55 1234 5678
+        email:
+          type: string
+          description: Correo electrónico
+          example: contacto@proveedor.com
+        address:
+          type: string
+          description: Dirección
+          example: Av. Reforma 123, CDMX
+      required:
+        - name
+    UpdateSupplierDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del proveedor
+          example: Distribuidora Central
+        contactName:
+          type: string
+          description: Nombre del contacto
+          example: Juan Pérez
+        phone:
+          type: string
+          description: Teléfono de contacto
+          example: +52 55 1234 5678
+        email:
+          type: string
+          description: Correo electrónico
+          example: contacto@proveedor.com
+        address:
+          type: string
+          description: Dirección
+          example: Av. Reforma 123, CDMX
+    CreateRecipeItemDto:
+      type: object
+      properties:
+        ingredientId:
+          type: string
+          description: ID del ingrediente (ObjectId)
+          example: 60d5ec9af682fbd39a1b865b
+        requiredQuantity:
+          type: number
+          description: Cantidad requerida del ingrediente
+          example: 0.25
+          minimum: 0.0001
+      required:
+        - ingredientId
+        - requiredQuantity
+    CreateRecipeDto:
+      type: object
+      properties:
+        plateId:
+          type: string
+          description: Identificador único del platillo
+          example: PLATE-BURGER-01
+        name:
+          type: string
+          description: Nombre del platillo o receta
+          example: Hamburguesa clásica
+        items:
+          description: Lista de ingredientes e insumos necesarios para la receta
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateRecipeItemDto"
+      required:
+        - plateId
+        - name
+        - items
+    RecipeItemDetailResponseDto:
+      type: object
+      properties:
+        ingredientId:
+          type: string
+          description: ID del ingrediente
+          example: 60d5ec9af682fbd39a1b865b
+        ingredientName:
+          type: string
+          description: Nombre del ingrediente
+          example: Carne de res molida
+        unit:
+          type: string
+          description: Unidad de medida
+          example: kg
+        requiredQuantity:
+          type: number
+          description: Cantidad requerida para una porción de la receta
+          example: 0.2
+        availableStock:
+          type: number
+          description: Stock actual disponible en inventario
+          example: 5
+        hasSufficientStock:
+          type: boolean
+          description: Indica si existe suficiente stock para al menos una porción
+          example: true
+      required:
+        - ingredientId
+        - ingredientName
+        - unit
+        - requiredQuantity
+        - availableStock
+        - hasSufficientStock
+    RecipeResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID único de la receta en MongoDB (ObjectId)
+          example: 60d5ec9af682fbd39a1b865c
+        plateId:
+          type: string
+          description: Identificador único del platillo
+          example: PLATE-BURGER-01
+        name:
+          type: string
+          description: Nombre del platillo o receta
+          example: Hamburguesa clásica
+        isAvailable:
+          type: boolean
+          description: Indica si la receta está disponible según las existencias de todos
+            sus insumos
+          example: true
+        maxPreparablePortions:
+          type: number
+          description: Número máximo de porciones que se pueden preparar con el stock actual
+          example: 25
+        productionCost:
+          type: number
+          description: Costo total estimado de producción por porción según costo unitario
+            de ingredientes
+          example: 45.5
+        items:
+          description: Lista detallada de ingredientes requeridos y su disponibilidad
+          type: array
+          items:
+            $ref: "#/components/schemas/RecipeItemDetailResponseDto"
+        createdAt:
+          format: date-time
+          type: string
+          description: Fecha de creación del registro
+        updatedAt:
+          format: date-time
+          type: string
+          description: Fecha de última actualización del registro
+      required:
+        - id
+        - plateId
+        - name
+        - isAvailable
+        - maxPreparablePortions
+        - productionCost
+        - items
+    UpdateRecipeDto:
+      type: object
+      properties:
+        plateId:
+          type: string
+          description: Identificador único del platillo
+          example: PLATE-BURGER-01
+        name:
+          type: string
+          description: Nombre del platillo o receta
+          example: Hamburguesa clásica
+        items:
+          description: Lista de ingredientes e insumos necesarios para la receta
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateRecipeItemDto"

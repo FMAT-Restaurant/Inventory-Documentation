@@ -1,0 +1,143 @@
+.page {
+  max-width: 76rem;
+  padding-block: clamp(2.5rem, 7vw, 5.5rem);
+}
+
+.hero {
+  padding: clamp(1.75rem, 6vw, 4rem);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 1.25rem;
+  background: var(--ifm-background-surface-color);
+  box-shadow: var(--ifm-global-shadow-lw);
+}
+
+.eyebrow {
+  margin-bottom: 0.9rem;
+  color: var(--ifm-color-primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-bottom: 1rem;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  line-height: 1.08;
+}
+
+.intro {
+  max-width: 48rem;
+  margin-bottom: 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.65;
+}
+
+.destinations {
+  padding-top: clamp(2.5rem, 6vw, 4rem);
+}
+
+.sectionTitle {
+  margin-bottom: 1.25rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  min-width: 0;
+}
+
+.cardLink {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 1rem;
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.cardLink:hover {
+  transform: translateY(-2px);
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+.cardLink:focus-visible {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 4px;
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+}
+
+.cardHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.cardStatus {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-800);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cardDescription {
+  flex-grow: 1;
+  margin-block: 1rem 1.5rem;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.6;
+}
+
+.cardAction {
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 40rem) {
+  .page {
+    padding-block: 1.5rem 3rem;
+  }
+
+  .hero {
+    border-radius: 1rem;
+  }
+
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardLink {
+    transition: none;
+  }
+
+  .cardLink:hover {
+    transform: none;
+  }
+}

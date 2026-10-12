@@ -1,0 +1,30 @@
+extends:
+  - recommended
+
+rules:
+  # Temporary while the reference source is still being completed.
+  no-empty-servers: off
+  security-defined: off
+  no-unresolved-refs: error
+  operation-operationId: error
+  operation-operationId-unique: error
+  operation-2xx-response: error
+  operation-4xx-response: error
+  no-invalid-media-type-examples: error
+  rule/media-type-schema-and-examples:
+    subject:
+      type: MediaType
+    assertions:
+      required:
+        - schema
+        - examples
+  rule/write-operation-request-body:
+    subject:
+      type: Operation
+      filterInParentKeys:
+        - post
+        - put
+        - patch
+    assertions:
+      required:
+        - requestBody

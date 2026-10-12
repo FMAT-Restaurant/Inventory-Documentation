@@ -1,0 +1,26 @@
+{
+  "name": "fmat-restaurant-inventory-documentation",
+  "private": true,
+  "packageManager": "pnpm@10.8.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "api:serve": "redocly preview apis/inventory/openapi.yaml",
+    "api:lint": "redocly lint apis/inventory/openapi.yaml",
+    "api:lint.generate.ignore.file": "redocly lint apis/inventory/openapi.yaml --generate-ignore-file",
+    "api:bundle": "redocly bundle apis/inventory/openapi.yaml --output static/api/openapi.yaml --ext yaml",
+    "docs:dev": "pnpm run api:bundle && docusaurus start",
+    "docs:build": "pnpm run api:bundle && docusaurus build"
+  },
+  "devDependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-mermaid": "3.10.2",
+    "@redocly/cli": "2.54.2",
+    "@scalar/docusaurus": "0.8.44",
+    "mermaid": "12.0.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

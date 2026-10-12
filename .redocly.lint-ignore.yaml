@@ -1,0 +1,27 @@
+# This file instructs Redocly's linter to ignore the rules contained for specific parts of your API.
+# See https://redocly.com/docs/cli/ for more information.
+apis/inventory/openapi.yaml:
+  info-license:
+    - '#/info'
+  operation-summary:
+    - '#/paths/~1/get/summary'
+  operation-4xx-response:
+    - '#/paths/~1/get/responses'
+    - '#/paths/~1ingredients/get/responses'
+    - '#/paths/~1batches/get/responses'
+    - '#/paths/~1suppliers/get/responses'
+    - '#/paths/~1recipes/get/responses'
+  rule/media-type-schema-and-examples:
+    - '#/paths/~1/get/responses/200/content/text~1html'
+    - '#/paths/~1ingredients/post/requestBody/content/application~1json'
+    - '#/paths/~1batches/post/requestBody/content/application~1json'
+    - '#/paths/~1batches~1{id}/patch/requestBody/content/application~1json'
+    - '#/paths/~1suppliers/post/requestBody/content/application~1json'
+    - '#/paths/~1suppliers~1{id}/patch/requestBody/content/application~1json'
+    - '#/paths/~1recipes/get/responses/200/content/application~1json'
+    - '#/paths/~1recipes/post/requestBody/content/application~1json'
+    - '#/paths/~1recipes/post/responses/200/content/application~1json'
+    - '#/paths/~1recipes/post/responses/201/content/application~1json'
+    - '#/paths/~1recipes~1{id}/get/responses/200/content/application~1json'
+    - '#/paths/~1recipes~1{id}/patch/requestBody/content/application~1json'
+    - '#/paths/~1recipes~1{id}/patch/responses/200/content/application~1json'
