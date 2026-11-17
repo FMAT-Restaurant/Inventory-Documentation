@@ -14,152 +14,122 @@ paths:
                 example: Hello World!
       tags:
         - app
-  /ingredients:
+  /items:
     post:
-      operationId: IngredientsController_create
+      operationId: ItemsController_create
       parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateIngredientDto"
+              $ref: "#/components/schemas/CreateItemDto"
       responses:
         "201":
-          description: Ingrediente creado con éxito
+          description: Item creado con éxito
         "400":
           description: Datos de entrada inválidos
         "409":
-          description: Ya existe un ingrediente con ese nombre
-      summary: Crear un nuevo ingrediente
+          description: Ya existe un item con ese nombre
+      summary: Crear un nuevo item
       tags: &a1
-        - ingredients
+        - items
     get:
-      operationId: IngredientsController_findAll
-      parameters: []
+      description: Permite buscar por nombre usando el parámetro q (coincidencia
+        parcial, sin distinguir mayúsculas) y paginar con page/limit.
+      operationId: ItemsController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Página (desde 1)
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Resultados por página (máximo 100)
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 20
+            type: number
+        - name: q
+          required: false
+          in: query
+          description: Texto para buscar items por nombre (coincidencia parcial, sin
+            distinguir mayúsculas)
+          schema:
+            example: tomate
+            type: string
       responses:
         "200":
-          description: Lista de ingredientes obtenida con éxito
-      summary: Obtener la lista completa de ingredientes
+          description: Lista paginada de items obtenida con éxito
+      summary: Obtener la lista de items
       tags: *a1
-  /ingredients/{id}:
+  /items/{id}:
     get:
-      operationId: IngredientsController_findOne
+      operationId: ItemsController_findOne
       parameters:
         - name: id
           required: true
           in: path
-          description: ID único del ingrediente (ObjectId)
+          description: ID único del item (ObjectId)
           schema:
             type: string
       responses:
         "200":
-          description: Ingrediente obtenido con éxito
+          description: Item obtenido con éxito
         "404":
-          description: Ingrediente no encontrado
-      summary: Obtener un ingrediente por su ID
+          description: Item no encontrado
+      summary: Obtener un item por su ID
       tags: *a1
-    delete:
-      operationId: IngredientsController_remove
+    patch:
+      operationId: ItemsController_update
       parameters:
         - name: id
           required: true
           in: path
-          description: ID único del ingrediente (ObjectId)
+          description: ID único del item (ObjectId)
           schema:
             type: string
-      responses:
-        "200":
-          description: Ingrediente eliminado con éxito
-        "404":
-          description: Ingrediente no encontrado
-      summary: Eliminar un ingrediente
-      tags: *a1
-  /batches:
-    post:
-      operationId: BatchController_create
-      parameters: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateBatchDto"
+              $ref: "#/components/schemas/UpdateItemDto"
       responses:
-        "201":
-          description: Lote creado con éxito
+        "200":
+          description: Item actualizado con éxito
         "400":
           description: Datos de entrada inválidos
         "404":
-          description: Ingrediente referenciado no encontrado
+          description: Item no encontrado
         "409":
-          description: Ya existe un lote con ese número
-      summary: Crear un nuevo lote
-      tags: &a2
-        - batches
-    get:
-      operationId: BatchController_findAll
-      parameters: []
-      responses:
-        "200":
-          description: Lista de lotes obtenida con éxito
-      summary: Obtener la lista completa de lotes
-      tags: *a2
-  /batches/{id}:
-    get:
-      operationId: BatchController_findOne
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID único del lote (ObjectId)
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Lote obtenido con éxito
-        "404":
-          description: Lote no encontrado
-      summary: Obtener un lote por su ID
-      tags: *a2
-    patch:
-      operationId: BatchController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID único del lote
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateBatchDto"
-      responses:
-        "200":
-          description: Lote actualizado con éxito
-        "404":
-          description: Lote no encontrado
-      summary: Actualizar un lote
-      tags: *a2
+          description: Ya existe un item con ese nombre
+      summary: Actualizar un item
+      tags: *a1
     delete:
-      operationId: BatchController_remove
+      description: "Baja lógica: el item se marca como inactivo y deja de aparecer en
+        el listado."
+      operationId: ItemsController_remove
       parameters:
         - name: id
           required: true
           in: path
-          description: ID único del lote
+          description: ID único del item (ObjectId)
           schema:
             type: string
       responses:
         "200":
-          description: Lote eliminado con éxito
+          description: Item desactivado con éxito
         "404":
-          description: Lote no encontrado
-      summary: Eliminar un lote
-      tags: *a2
+          description: Item no encontrado
+      summary: Desactivar un item
+      tags: *a1
   /suppliers:
     post:
       operationId: SuppliersController_create
@@ -178,16 +148,43 @@ paths:
         "409":
           description: Ya existe un proveedor con ese nombre
       summary: Crear un nuevo proveedor
-      tags: &a3
+      tags: &a2
         - suppliers
     get:
+      description: Devuelve los proveedores activos paginados. Con
+        includeInactive=true incluye también los dados de baja.
       operationId: SuppliersController_findAll
-      parameters: []
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Página (desde 1)
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Resultados por página (máximo 100)
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 20
+            type: number
+        - name: includeInactive
+          required: false
+          in: query
+          description: Incluir también los proveedores dados de baja (por defecto solo
+            activos)
+          schema:
+            example: false
+            type: boolean
       responses:
         "200":
-          description: Lista de proveedores obtenida con éxito
-      summary: Obtener la lista completa de proveedores
-      tags: *a3
+          description: Lista paginada de proveedores obtenida con éxito
+      summary: Obtener la lista de proveedores
+      tags: *a2
   /suppliers/{id}:
     get:
       operationId: SuppliersController_findOne
@@ -204,7 +201,7 @@ paths:
         "404":
           description: Proveedor no encontrado
       summary: Obtener un proveedor por su ID
-      tags: *a3
+      tags: *a2
     patch:
       operationId: SuppliersController_update
       parameters:
@@ -226,7 +223,7 @@ paths:
         "404":
           description: Proveedor no encontrado
       summary: Actualizar un proveedor
-      tags: *a3
+      tags: *a2
     delete:
       operationId: SuppliersController_remove
       parameters:
@@ -242,7 +239,249 @@ paths:
         "404":
           description: Proveedor no encontrado
       summary: Eliminar un proveedor
+      tags: *a2
+  /batches:
+    post:
+      operationId: BatchController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBatchDto"
+      responses:
+        "201":
+          description: Lote creado con éxito
+        "400":
+          description: Datos de entrada inválidos
+        "404":
+          description: Item referenciado no encontrado
+        "409":
+          description: Ya existe un lote con ese número
+      summary: Crear un nuevo lote
+      tags: &a3
+        - batches
+    get:
+      operationId: BatchController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Página (desde 1)
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Resultados por página (máximo 100)
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 20
+            type: number
+        - name: itemId
+          required: false
+          in: query
+          description: Filtrar lotes por ID de item (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista paginada de lotes obtenida con éxito
+      summary: Obtener la lista paginada de lotes
       tags: *a3
+  /batches/{id}:
+    get:
+      operationId: BatchController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del lote (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lote obtenido con éxito
+        "404":
+          description: Lote no encontrado
+      summary: Obtener un lote por su ID
+      tags: *a3
+    patch:
+      operationId: BatchController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del lote
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBatchDto"
+      responses:
+        "200":
+          description: Lote actualizado con éxito
+        "404":
+          description: Lote no encontrado
+      summary: Actualizar un lote
+      tags: *a3
+    delete:
+      operationId: BatchController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID único del lote
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lote eliminado con éxito
+        "404":
+          description: Lote no encontrado
+      summary: Eliminar un lote
+      tags: *a3
+  /suppliers/{id}/cost-history:
+    get:
+      description: Lista las compras (lotes) del proveedor con su costo unitario de
+        compra, la más reciente primero. Admite filtros por insumo y rango de
+        fechas, orden y paginación.
+      operationId: SupplierCostHistoryController_findCostHistory
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID del proveedor (ObjectId)
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          description: Filtrar por ID de item (ObjectId)
+          schema:
+            type: string
+        - name: from
+          required: false
+          in: query
+          description: Fecha inicial de la compra (ISO 8601; con solo fecha incluye todo
+            ese día)
+          schema:
+            example: 2026-11-01
+            type: string
+        - name: to
+          required: false
+          in: query
+          description: Fecha final de la compra (ISO 8601; con solo fecha incluye todo ese
+            día)
+          schema:
+            example: 2026-11-30
+            type: string
+        - name: order
+          required: false
+          in: query
+          description: "Orden por fecha de compra: desc (más reciente primero) o asc"
+          schema:
+            default: desc
+            type: string
+            enum:
+              - desc
+              - asc
+        - name: page
+          required: false
+          in: query
+          description: Página (desde 1)
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Resultados por página (máximo 100)
+          schema:
+            default: 20
+            type: number
+      responses:
+        "200":
+          description: Historial obtenido con éxito
+        "404":
+          description: Proveedor no encontrado
+      summary: Historial de costos de compra de un proveedor
+      tags:
+        - suppliers
+  /movements:
+    get:
+      description: "Los movimientos son de solo lectura: no se editan ni eliminan; las
+        correcciones se hacen con movimientos compensatorios. Soporta paginación
+        con page/limit."
+      operationId: StockMovementController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Página (desde 1)
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Resultados por página (máximo 100)
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 20
+            type: number
+        - name: batchId
+          required: false
+          in: query
+          description: Filtrar por ID de lote (ObjectId)
+          schema:
+            type: string
+        - name: movementType
+          required: false
+          in: query
+          description: Filtrar por tipo de movimiento
+          schema:
+            type: string
+            enum:
+              - in
+              - out
+              - waste
+              - adjustment
+        - name: referenceId
+          required: false
+          in: query
+          description: Filtrar por referencia externa (orden, platillo, etc.)
+          schema:
+            type: string
+        - name: from
+          required: false
+          in: query
+          description: Fecha inicial (ISO 8601)
+          schema:
+            example: 2026-11-01T00:00:00.000Z
+            type: string
+        - name: to
+          required: false
+          in: query
+          description: Fecha final (ISO 8601)
+          schema:
+            example: 2026-11-30T23:59:59.999Z
+            type: string
+      responses:
+        "200":
+          description: Lista paginada de movimientos obtenida con éxito
+      summary: Consultar movimientos de inventario
+      tags:
+        - movements
   /recipes:
     post:
       operationId: RecipeController_createOrUpdate
@@ -269,7 +508,7 @@ paths:
         "400":
           description: Datos de entrada inválidos o incompletos
         "404":
-          description: Uno o más ingredientes referenciados no existen en el catálogo
+          description: Uno o más items referenciados no existen en el catálogo
         "409":
           description: Conflicto al persistir la receta
       summary: Registrar o actualizar una receta (idempotente por plateId)
@@ -278,6 +517,23 @@ paths:
     get:
       operationId: RecipeController_findAll
       parameters:
+        - name: page
+          required: false
+          in: query
+          description: Página (desde 1)
+          schema:
+            minimum: 1
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          description: Resultados por página (máximo 100)
+          schema:
+            minimum: 1
+            maximum: 100
+            default: 20
+            type: number
         - name: available
           required: false
           in: query
@@ -287,15 +543,9 @@ paths:
             type: boolean
       responses:
         "200":
-          description: Lista de recetas obtenida con éxito
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RecipeResponseDto"
-      summary: Obtener el listado de recetas con cálculo de disponibilidad y costo en
-        tiempo real
+          description: Lista paginada de recetas obtenida con éxito
+      summary: Obtener el listado paginado de recetas con cálculo de disponibilidad y
+        costo en tiempo real
       tags: *a4
   /recipes/{id}:
     get:
@@ -343,7 +593,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RecipeResponseDto"
         "404":
-          description: Receta o ingredientes no encontrados
+          description: Receta o items no encontrados
       summary: Actualizar parcialmente una receta
       tags: *a4
     delete:
@@ -362,34 +612,139 @@ paths:
           description: Receta no encontrada
       summary: Eliminar una receta
       tags: *a4
-  /apo/test/reset:
-    delete:
-      operationId: TestController_reset
-      parameters: []
+  /reservations:
+    get:
+      description: Permite filtrar por estado, orden o item. Las reservas pendientes
+        expiradas no se incluyen.
+      operationId: ReservationController_findAll
+      parameters:
+        - name: status
+          required: false
+          in: query
+          description: Filtrar por estado de la reserva
+          schema:
+            type: string
+            enum:
+              - pending
+              - confirmed
+              - consumed
+              - released
+              - expired
+        - name: orderId
+          required: false
+          in: query
+          description: Filtrar por referencia externa de orden
+          schema:
+            type: string
+        - name: itemId
+          required: false
+          in: query
+          description: Filtrar por ID de item (ObjectId)
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: Máximo de resultados a devolver
+          schema:
+            type: number
       responses:
         "200":
-          description: Base de datos borrada con éxito
-        "403":
-          description: No permitido en el entorno actual (solo dev/qa)
-      summary: Restablecer (borrar) toda la base de datos
+          description: Lista de reservas obtenida con éxito
+      summary: Listar reservas de stock
+      tags: &a5
+        - reservations
+  /reservations/pending/summary:
+    get:
+      description: Agrupa las reservas pendientes por item para conocer cuánto stock
+        está apartado pero aún no confirmado.
+      operationId: ReservationController_getPendingSummary
+      parameters:
+        - name: itemId
+          required: false
+          in: query
+          description: Filtrar por ID de item (ObjectId)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resumen de reservas pendientes
+      summary: Resumen de stock apartado pendiente
+      tags: *a5
+  /reservations/{orderId}:
+    get:
+      operationId: ReservationController_findByOrderId
+      parameters:
+        - name: orderId
+          required: true
+          in: path
+          description: Referencia externa de la orden
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reserva obtenida con éxito
+        "404":
+          description: Reserva no encontrada
+      summary: Obtener la reserva de una orden
+      tags: *a5
+  /movements/waste:
+    post:
+      description: Descuenta del lote la cantidad perdida y registra el movimiento de
+        merma. Solo requiere el lote, la cantidad y el motivo. Las mermas de
+        órdenes llegan por evento desde Órdenes.
+      operationId: WasteController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWasteDto"
+      responses:
+        "201":
+          description: Merma registrada
+        "422":
+          description: La cantidad excede lo que queda en el lote
+      summary: Registrar una merma de un lote
       tags:
-        - test
+        - movements
 info:
   title: Inventory Backend
-  description: API del inventario
+  description: "API del inventario. El acceso se realiza a través del API Gateway
+    (Kong): el cliente presenta un access token Bearer HS256 y el gateway
+    propaga la identidad en los headers X-User-Id, X-Staff-Id, X-User-Roles y
+    X-User-Permissions."
   version: 0.0.1
   contact: {}
 tags: []
 servers: []
 components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
   schemas:
-    CreateIngredientDto:
+    CreateItemDto:
       type: object
       properties:
+        sku:
+          type: string
+          description: Código SKU del item
+          example: ING-0001
         name:
           type: string
-          description: Nombre del ingrediente
+          description: Nombre del item
           example: Tomate
+        description:
+          type: string
+          description: Descripción del item
+          example: Tomate perita para salsas
+        category:
+          type: string
+          description: Categoría del item
+          example: Verduras
         unit:
           type: string
           description: Unidad de medida
@@ -398,76 +753,72 @@ components:
           type: number
           description: Cantidad en minima para el stock
           example: 10
-        category:
+        isPerishable:
+          type: boolean
+          description: Indica si el item es perecedero
+          example: true
+        storageCondition:
           type: string
-          description: Categoría del ingrediente
-          example: Verduras
+          description: Condición de almacenamiento
+          example: Refrigerado
+        averageCost:
+          type: number
+          description: Costo promedio por unidad de medida
+          example: 18.5
         supplierIdSugested:
           type: string
           description: ID del proveedor sugerido
           example: 507f1f77bcf86cd799439011
       required:
+        - sku
         - name
+        - category
         - unit
         - minStock
-        - category
-    CreateBatchDto:
+        - storageCondition
+    UpdateItemDto:
       type: object
       properties:
-        batchNumber:
+        sku:
           type: string
-          description: Número de lote único
-          example: LOTE-2023-001
-        ingredientId:
+          description: Código SKU del item
+          example: ING-0001
+        name:
           type: string
-          description: ID del ingrediente (ObjectId)
-          example: 60d5ec...
-        quantity:
+          description: Nombre del item
+          example: Tomate
+        description:
+          type: string
+          description: Descripción del item
+          example: Tomate perita para salsas
+        category:
+          type: string
+          description: Categoría del item
+          example: Verduras
+        unit:
+          type: string
+          description: Unidad de medida
+          example: kg
+        minStock:
           type: number
-          description: Cantidad del lote
-          example: 100
-        expirationDate:
+          description: Cantidad en minima para el stock
+          example: 10
+        isPerishable:
+          type: boolean
+          description: Indica si el item es perecedero
+          example: true
+        storageCondition:
           type: string
-          description: Fecha de expiración
-          example: 2024-12-31T23:59:59Z
-        supplierId:
-          type: string
-          description: ID del proveedor (ObjectId)
-          example: 60d5ec...
-        cost:
+          description: Condición de almacenamiento
+          example: Refrigerado
+        averageCost:
           type: number
-          description: Costo total o unitario del lote
-          example: 150.5
-        status:
+          description: Costo promedio por unidad de medida
+          example: 18.5
+        supplierIdSugested:
           type: string
-          description: Estado del lote
-          enum:
-            - active
-            - expires_today
-            - expired
-            - depleted
-          default: active
-      required:
-        - batchNumber
-        - ingredientId
-        - quantity
-        - expirationDate
-        - cost
-    UpdateBatchDto:
-      type: object
-      properties:
-        quantity:
-          type: number
-          description: Cantidad del lote
-          example: 100
-        expirationDate:
-          type: string
-          description: Fecha de expiración
-          example: 2024-12-31T23:59:59Z
-        cost:
-          type: number
-          description: Costo total o unitario del lote
-          example: 150.5
+          description: ID del proveedor sugerido
+          example: 507f1f77bcf86cd799439011
     CreateSupplierDto:
       type: object
       properties:
@@ -516,20 +867,76 @@ components:
           type: string
           description: Dirección
           example: Av. Reforma 123, CDMX
+    CreateBatchDto:
+      type: object
+      properties:
+        batchNumber:
+          type: string
+          description: Número de lote (se combina con el SKU del item; si se omite, se
+            genera automáticamente)
+          example: LOTE-2026-001
+        itemId:
+          type: string
+          description: ID del item (ObjectId)
+          example: 60d5ec...
+        quantity:
+          type: number
+          description: Cantidad del lote
+          example: 100
+        expirationDate:
+          type: string
+          description: Fecha de expiración
+          example: 2026-12-31T23:59:59Z
+        supplierId:
+          type: string
+          description: ID del proveedor (ObjectId)
+          example: 60d5ec...
+        cost:
+          type: number
+          description: Costo unitario del lote
+          example: 150.5
+      required:
+        - itemId
+        - quantity
+        - expirationDate
+        - cost
+    UpdateBatchDto:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: Cantidad del lote
+          example: 100
+        expirationDate:
+          type: string
+          description: Fecha de expiración
+          example: 2026-12-31T23:59:59Z
+        cost:
+          type: number
+          description: Costo unitario del lote
+          example: 150.5
+        reason:
+          type: string
+          description: Motivo del ajuste de cantidad (solo se usa para auditoría)
+          example: Corrección por conteo físico
+        createdBy:
+          type: string
+          description: Usuario responsable del ajuste (solo se usa para auditoría)
+          example: system
     CreateRecipeItemDto:
       type: object
       properties:
-        ingredientId:
+        itemId:
           type: string
-          description: ID del ingrediente (ObjectId)
+          description: ID del item (ObjectId)
           example: 60d5ec9af682fbd39a1b865b
         requiredQuantity:
           type: number
-          description: Cantidad requerida del ingrediente
+          description: Cantidad requerida del item
           example: 0.25
           minimum: 0.0001
       required:
-        - ingredientId
+        - itemId
         - requiredQuantity
     CreateRecipeDto:
       type: object
@@ -543,7 +950,7 @@ components:
           description: Nombre del platillo o receta
           example: Hamburguesa clásica
         items:
-          description: Lista de ingredientes e insumos necesarios para la receta
+          description: Lista de items e insumos necesarios para la receta
           type: array
           items:
             $ref: "#/components/schemas/CreateRecipeItemDto"
@@ -554,13 +961,13 @@ components:
     RecipeItemDetailResponseDto:
       type: object
       properties:
-        ingredientId:
+        itemId:
           type: string
-          description: ID del ingrediente
+          description: ID del item
           example: 60d5ec9af682fbd39a1b865b
-        ingredientName:
+        itemName:
           type: string
-          description: Nombre del ingrediente
+          description: Nombre del item
           example: Carne de res molida
         unit:
           type: string
@@ -579,8 +986,8 @@ components:
           description: Indica si existe suficiente stock para al menos una porción
           example: true
       required:
-        - ingredientId
-        - ingredientName
+        - itemId
+        - itemName
         - unit
         - requiredQuantity
         - availableStock
@@ -612,13 +1019,24 @@ components:
         productionCost:
           type: number
           description: Costo total estimado de producción por porción según costo unitario
-            de ingredientes
+            de items
           example: 45.5
         items:
-          description: Lista detallada de ingredientes requeridos y su disponibilidad
+          description: Lista detallada de items requeridos y su disponibilidad
           type: array
           items:
             $ref: "#/components/schemas/RecipeItemDetailResponseDto"
+        isComplete:
+          type: boolean
+          description: false cuando la receta referencia insumos que no existen en el
+            catálogo
+          example: true
+        missingItemIds:
+          description: IDs de insumos referenciados que no existen en el catálogo
+          example: []
+          type: array
+          items:
+            type: string
         createdAt:
           format: date-time
           type: string
@@ -635,6 +1053,8 @@ components:
         - maxPreparablePortions
         - productionCost
         - items
+        - isComplete
+        - missingItemIds
     UpdateRecipeDto:
       type: object
       properties:
@@ -647,7 +1067,28 @@ components:
           description: Nombre del platillo o receta
           example: Hamburguesa clásica
         items:
-          description: Lista de ingredientes e insumos necesarios para la receta
+          description: Lista de items e insumos necesarios para la receta
           type: array
           items:
             $ref: "#/components/schemas/CreateRecipeItemDto"
+    CreateWasteDto:
+      type: object
+      properties:
+        batchId:
+          type: string
+          description: Lote en el que se generó la merma
+          example: 60d5ec9af682fbd39a1b865b
+        quantity:
+          type: number
+          description: Cantidad perdida
+          example: 0.5
+        reason:
+          type: string
+          description: Motivo de la merma
+          example: Se cayó durante el acomodo del almacén
+      required:
+        - batchId
+        - quantity
+        - reason
+security:
+  - bearer: []
