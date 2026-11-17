@@ -9,6 +9,9 @@ slug: /casos-de-uso
 
 Convención de eventos: `Microservicio.Entidad.Accion`. Este documento complementa a `1_Requisitos_Inventario.md`; cada Caso de Uso corresponde 1:1 con su Requisito Funcional del mismo número.
 
+> [!note] Nomenclatura implementada
+> Este documento usa la convención de diseño del proyecto. La implementación real del backend emplea routing keys en minúsculas con acciones en inglés más su alias en español (p. ej. `Ordenes.Orden.Creada` → `ordenes.order.created` / `ordenes.orden.creada`; `Inventario.Reserva.Confirmada` → `inventory.reservation.confirmed`). El mapeo completo, con exchanges, colas y payloads, está en [Contratos de Eventos](/contratos-eventos).
+
 ---
 
 ## CU-01 — Reservar inventario para nueva orden
@@ -64,6 +67,9 @@ Convención de eventos: `Microservicio.Entidad.Accion`. Este documento complemen
 - E1: Evento `Ordenes.Orden.Servida` duplicado → se detecta por idempotencia (id de orden ya procesado) y se ignora.
 
 **Reglas de negocio relacionadas:** Descuento irreversible; a partir de este estado, cualquier reingreso es merma, no devolución.
+
+> [!note] Implementación
+> En el contrato de integración con Órdenes, el descuento FEFO se ejecuta al recibir `ordenes.order.served`, que Órdenes emite también como `ordenes.orden.en_preparacion` (momento en que cocina empieza a preparar). Si llega un `served` sin reserva activa o la orden ya fue consumida, Inventario responde rechazado con `errorCode` (p. ej. `ALREADY_SERVED`) y no toca el stock.
 
 ---
 
@@ -252,14 +258,14 @@ Convención de eventos: `Microservicio.Entidad.Accion`. Este documento complemen
 ## CU-11 — Registrar receta desde evento de creación de platillo *(nuevo)*
 **Relacionado:** RF-11
 **Objetivo:** Persistir la receta de un platillo nuevo para que Inventario pueda evaluar disponibilidad de forma autónoma.
-**Actor principal:** Microservicio de Órdenes/Cocina (evento `Ordenes.Platillo.Creado`)
+**Actor principal:** Microservicio de Menú (evento `Menu.Platillo.Creado`)
 **Actores secundarios:** Sistema de Inventario, Administrador (revisión de recetas incompletas)
 
 **Precondiciones:** Idealmente, los ingredientes referenciados ya existen en el catálogo de Inventario.
 **Postcondiciones:** Receta almacenada y disponible para CU-01, CU-05 y CU-12.
 
 **Flujo principal:**
-1. Órdenes emite `Ordenes.Platillo.Creado` con `platillo_id`, nombre, e ingredientes + cantidades.
+1. Menú emite `Menu.Platillo.Creado` con `platillo_id`, nombre, e ingredientes + cantidades.
 2. Inventario recibe el evento y valida que cada ingrediente exista en su catálogo.
 3. Inventario registra la receta vinculando `platillo_id` a los ingredientes/SKUs y cantidades.
 4. Inventario queda listo para responder consultas de disponibilidad (CU-05) y evaluar reservas (CU-01).
@@ -271,6 +277,9 @@ Convención de eventos: `Microservicio.Entidad.Accion`. Este documento complemen
 - E1: Evento duplicado (mismo `platillo_id`) → idempotencia, no se duplica el registro.
 
 **Reglas de negocio relacionadas:** La receta es la fuente única de verdad para todas las validaciones de disponibilidad; su integridad depende de que los ingredientes referenciados existan en el catálogo.
+
+> [!note] Implementación
+> El evento proviene del microservicio de **Menú** (no de Órdenes): `menu.source.created` en el exchange `menu.topic`, con `platillo_id` = `sourceId`. También se sincroniza con `menu.source.updated` (upsert) y se elimina con `menu.source.deleted`. El aviso de receta incompleta se publica como `inventory.recipe.incomplete`. Ver [Contratos de Eventos](/contratos-eventos).
 
 ---
 

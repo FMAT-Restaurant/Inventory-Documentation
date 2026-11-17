@@ -9,6 +9,9 @@ slug: /test-cases
 
 Convención de IDs: `TC-[RF]-[secuencial]`. Convención de eventos: `Microservicio.Entidad.Accion`. Este documento complementa a `1_Requisitos_Inventario.md` y `2_Casos_de_Uso_Inventario.md`.
 
+> [!note] Nomenclatura implementada
+> Los pasos citan los eventos con la convención de diseño. Las claves reales de RabbitMQ y sus payloads están en [Contratos de Eventos](/contratos-eventos): p. ej. `Ordenes.Orden.Creada` → `ordenes.order.created` / `ordenes.orden.creada`; `Menu.Platillo.Creado` → `menu.source.created`; `Inventario.Receta.NoDisponible` → `inventory.recipe.not-available`.
+
 ---
 
 ## RF-01 / CU-01 — Reserva de inventario al crear una orden
@@ -133,8 +136,8 @@ Convención de IDs: `TC-[RF]-[secuencial]`. Convención de eventos: `Microservic
 
 | ID | Nombre | Objetivo | Datos de prueba | Pasos clave | Resultado esperado | Prioridad |
 |---|---|---|---|---|---|---|
-| TC-11-01 | Registro exitoso de receta (happy path) | Validar persistencia de receta | Evento con 4 ingredientes, todos existentes en catálogo | Emitir `Ordenes.Platillo.Creado` | Receta almacenada correctamente, vinculada a `platillo_id` | Alta |
-| TC-11-02 | Ingrediente no encontrado en catálogo | Validar manejo de referencia inválida | Evento con 1 ingrediente inexistente en Inventario | Emitir `Ordenes.Platillo.Creado` | Receta registrada como incompleta; alerta generada para revisión | Alta |
+| TC-11-01 | Registro exitoso de receta (happy path) | Validar persistencia de receta | Evento con 4 ingredientes, todos existentes en catálogo | Emitir `Menu.Platillo.Creado` | Receta almacenada correctamente, vinculada a `platillo_id` | Alta |
+| TC-11-02 | Ingrediente no encontrado en catálogo | Validar manejo de referencia inválida | Evento con 1 ingrediente inexistente en Inventario | Emitir `Menu.Platillo.Creado` | Receta registrada como incompleta; alerta generada para revisión | Alta |
 | TC-11-03 | Evento duplicado (idempotencia) | Validar que no se duplique la receta | Mismo `platillo_id` enviado dos veces | Emitir el evento dos veces | Solo un registro de receta persiste | Alta |
 | TC-11-04 | Receta con lista vacía de ingredientes (negativo/error) | Validar validación de datos | Evento sin ingredientes | Emitir evento inválido | Rechazo controlado, log de error | Media |
 

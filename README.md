@@ -12,6 +12,7 @@ requisitos, casos de uso, test cases y referencia del contrato de API.
 | [`docs/1_Requisitos_Inventario.md`](docs/1_Requisitos_Inventario.md) | Requisitos (RF-01…RF-12, RNF), criterios de aceptación, impacto, trazabilidad. |
 | [`docs/2_Casos_de_Uso_Inventario.md`](docs/2_Casos_de_Uso_Inventario.md) | Casos de uso CU-01…CU-12. |
 | [`docs/3_Test_Cases_Inventario.md`](docs/3_Test_Cases_Inventario.md) | Casos de prueba TC-* trazados a requisitos y casos de uso. |
+| [`docs/4_Contratos_de_Eventos.md`](docs/4_Contratos_de_Eventos.md) | Contratos de eventos RabbitMQ implementados (exchanges, routing keys, payloads). |
 | [`docs/mockups.md`](docs/mockups.md) | Mockups de interfaz. |
 | [`apis/inventory/openapi.yaml`](apis/inventory/openapi.yaml) | Contrato OpenAPI del Inventory Backend (referencia Scalar). |
 
